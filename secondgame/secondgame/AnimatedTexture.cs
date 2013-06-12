@@ -127,6 +127,7 @@ namespace secondgame
         }
         public override void Update(GameTime gameTime)
         {
+            int x = 0;
             updateCol = BegCol;
             updateRow = BegRow;
             count++;

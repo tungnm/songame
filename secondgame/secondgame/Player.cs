@@ -14,7 +14,7 @@ namespace secondgame
 {
     public enum Move {left,stand, right, up};
     /// <summary>
-    /// This is a game component that implements IUpdateable.
+    /// This class represents a player
     /// </summary>
     
     public class Player : Microsoft.Xna.Framework.DrawableGameComponent
@@ -41,8 +41,7 @@ namespace secondgame
             player.getBeginCol(0);
             player.getBeginRow(spriteHeight * 2);
             player.getRange(spriteWidth);
-            //height: 150
-            //length: 104
+         
             // TODO: Construct any child components here
         }
         public override void Update(GameTime gameTime)

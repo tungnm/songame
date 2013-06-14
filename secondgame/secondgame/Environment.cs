@@ -19,7 +19,6 @@ namespace secondgame
     {
         Texture2D texture;
         EnvirType type;
-        Vector2 position;
         SpriteBatch sBatch;
         public Environment(Game game, ref Texture2D theTexture, EnvirType theType)
             : base(game)

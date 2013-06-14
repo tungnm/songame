@@ -23,66 +23,49 @@ namespace secondgame
         int BegCol;
         int AcRow;
         int AcCol;
-        int myRange;
+        int myFrameRange;
         int count;
         int frameNum;
         int updateCol;
         int updateRow;
+        int rowLength;
         Texture2D texture;
         Boolean isStop;
-        public AnimatedTexture(Game game, Texture2D theTexture, int frame)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="game">the game</param>
+        /// <param name="theTexture">texture</param>
+        /// <param name="frame">number of frame in each action</param>
+        /// <param name="beginRow">the beginning frame row</param>
+        /// <param name="beginCol">the beginning frame collum</param>
+        /// <param name="beginActionRow">the beginning action row</param>
+        /// <param name="actionRowRange">the range between each action</param>
+        public AnimatedTexture(Game game, Texture2D theTexture, int frame, int beginRow, int beginCol, int beginActionRow,int beginActionCol, int actionRowRange, int frameRange)
             : base(game)
         {
             count = 0;
             frameNum = frame;
             texture = theTexture;
             isStop = true;
+            BegRow = beginRow;
+            BegCol = beginCol;
             updateRow = BegRow ;
             updateCol = BegCol ;
+            AcRow = beginActionRow;
+            originAcRow = beginActionRow;
+            AcCol = beginActionCol;
+            originAcCol = beginActionCol;
+            rowLength = actionRowRange;
+            myFrameRange = frameRange;
             // TODO: Construct any child components here
         }
-        /// <summary>
-        /// get the beginning action row
-        /// </summary>
-        /// <param name="theRow"></param>
-        public void getBeginRow(int theRow)
+        public void setAction(int action)
         {
-            BegRow = theRow;
+            AcRow = action*rowLength;
+            originAcRow = action * rowLength;
         }
-        /// <summary>
-        /// get the beginning collum of the sprite
-        /// </summary>
-        /// <param name="theCol"></param>
-        public void getBeginCol(int theCol)
-        {
-            BegCol = theCol;
-        }
-        /// <summary>
-        /// get the action collum
-        /// </summary>
-        /// <param name="theCol"></param>
-        public void getActionCol(int theCol)
-        {
-            AcCol = theCol;
-            originAcCol = theCol;
-        }
-        /// <summary>
-        /// get the range between frame
-        /// </summary>
-        /// <param name="range"></param>
-        public void getRange(int range)
-        {
-           myRange  = range;
-        }
-        /// <summary>
-        /// get tthe action Row
-        /// </summary>
-        /// <param name="theRow"></param>
-        public void getActionRow(int theRow)
-        {
-            AcRow = theRow;
-            originAcRow = theRow;
-        }
+
         /// <summary>
         /// stop the action
         /// </summary>
@@ -101,7 +84,7 @@ namespace secondgame
         /// return the vector2 of source Rectangle
         /// </summary>
         /// <returns></returns>
-        public Vector2 Rectangle()
+        public Vector2 getRectangle()
         {
             return new Vector2(updateCol, updateRow);
         }
@@ -109,7 +92,7 @@ namespace secondgame
         /// return the texture 2D
         /// </summary>
         /// <returns></returns>
-        public Texture2D returnTexture()
+        public Texture2D getTexture()
         {
             return texture;
         }
@@ -117,17 +100,16 @@ namespace secondgame
         /// get the current frame
         /// </summary>
         /// <returns></returns>
-        public int getCurrent()
+        public void setBeginRow(int row)
         {
-            return updateCol/myRange;
+            BegRow = row;
         }
-        public override void Initialize()
+        public void setBeginCol(int col)
         {
-            base.Initialize();
+            BegCol = col;
         }
         public override void Update(GameTime gameTime)
         {
-            int x = 0;
             updateCol = BegCol;
             updateRow = BegRow;
             count++;
@@ -137,11 +119,10 @@ namespace secondgame
                 updateCol = AcCol;
                 if (count == 10)
                 {
-                    if (AcCol < (frameNum-1)*myRange)
+                    if (AcCol < (frameNum-1)*myFrameRange)
                     {
-                        AcCol+=myRange;
+                        AcCol+=myFrameRange;
                         count = 0;
-                        updateRow = AcRow;
                         updateCol = AcCol;
                     }
                     else
@@ -160,7 +141,6 @@ namespace secondgame
                 updateCol = BegCol;
                 count = 0;
             }
-
             base.Update(gameTime);
         }
     }

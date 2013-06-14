@@ -24,6 +24,7 @@ namespace secondgame
         Environment background;
         Player man;
         AnimatedTexture manTexture;
+        SpriteMovement manMove;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -58,10 +59,12 @@ namespace secondgame
             backgroundTexture = Content.Load<Texture2D>("background");
             playerTexture = Content.Load<Texture2D>("playersprite");
             background = new Environment(this, ref backgroundTexture, EnvirType.background);
-            manTexture = new AnimatedTexture(this, playerTexture, 6);
-            man = new Player(this, ref manTexture);
+            manTexture = new AnimatedTexture(this, playerTexture, 6, 2 * 150, 0, 0, 0, 150,104);
+            manMove = new SpriteMovement(this, new Vector2(100,600));
+            man = new Player(this, ref manTexture, manMove);
             Components.Add(man);
             Components.Add(manTexture);
+            Components.Add(manMove);
             Components.Add(background);
             // TODO: use this.Content to load your game content here
         }

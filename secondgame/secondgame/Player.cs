@@ -29,26 +29,24 @@ namespace secondgame
         Move move;
         int count;
         AnimatedTexture player;
-        int current;
-        public Player(Game game, ref AnimatedTexture theplayer)
+        SpriteMovement movement;
+
+        public Player(Game game, ref AnimatedTexture theplayer, SpriteMovement theMovement)
             : base(game)
         {
             count = 0;
             player = theplayer;
-            texture = player.returnTexture();
+            movement = theMovement;
+            texture = player.getTexture();
             sBatch = (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch));
             move = Move.stand;
-            player.getBeginCol(0);
-            player.getBeginRow(spriteHeight * 2);
-            player.getRange(spriteWidth);
-         
+            movement.spriteJump(new Vector2(0, -5), 2, 20);
             // TODO: Construct any child components here
         }
         public override void Update(GameTime gameTime)
         {
             // TODO: Add your update code here
             count++;
-            current = player.getCurrent();
             keyboard = Keyboard.GetState();
             if(keyboard.IsKeyDown(Keys.Left))
             {
@@ -57,6 +55,10 @@ namespace secondgame
             else if (keyboard.IsKeyDown(Keys.Right))
             {
                 move = Move.right;
+            }
+            else if (keyboard.IsKeyDown(Keys.Up))
+            {
+                move = Move.up;
             }
             else
             {
@@ -67,29 +69,38 @@ namespace secondgame
                 if (move == Move.right)
                 {
                     player.play();
-                    player.getActionRow(0);
-                    player.getBeginCol(0);
+                    player.setAction(0);
+                    player.setBeginCol(0);
+                    movement.play();
+                    movement.setVelocity(new Vector2(3, 0));
                 }
-                else if (move == Move.left)
+                else if (move == Move.left) 
                 {
                     player.play();
-                    player.getActionRow(spriteHeight);
-                    player.getBeginCol(spriteWidth);
+                    player.setAction(1);
+                    player.setBeginCol(spriteWidth);
+                    movement.play();
+                    movement.setVelocity(new Vector2(-3, 0));
                 }
-                else if(move == Move.stand)
+                else if (move == Move.up)
+                {
+                    movement.playJump();
+                }
+                else if (move == Move.stand)
                 {
                     player.stop();
+                    movement.stop();
                 }
                 count = 0;
             }
             
             base.Update(gameTime);
-
-            spriteRectangle = new Rectangle((int)player.Rectangle().X, (int)player.Rectangle().Y, spriteWidth, spriteHeight);
+            position = new Vector2(movement.getPosition().X, movement.getPosition().Y);
+            spriteRectangle = new Rectangle((int)player.getRectangle().X, (int)player.getRectangle().Y, spriteWidth, spriteHeight);
         }
         public override void Draw(GameTime gameTime)
         {
-            sBatch.Draw(texture, new Vector2(100, 600), spriteRectangle, Color.White);
+            sBatch.Draw(texture, position, spriteRectangle, Color.White);
             base.Draw(gameTime);
         }
     }

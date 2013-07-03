@@ -44,7 +44,7 @@ namespace secondgame
             // TODO: Add your initialization logic here
 
             base.Initialize();
-            Window.Title="Thanh Giong";
+            Window.Title="My Game";
         }
 
         /// <summary>
@@ -56,16 +56,27 @@ namespace secondgame
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             Services.AddService(typeof(SpriteBatch), spriteBatch);
-            backgroundTexture = Content.Load<Texture2D>("background");
-            playerTexture = Content.Load<Texture2D>("playersprite");
-            background = new Environment(this, ref backgroundTexture, EnvirType.background);
-            manTexture = new AnimatedTexture(this, playerTexture, 6, 2 * 150, 0, 0, 0, 150,104);
-            manMove = new SpriteMovement(this, new Vector2(100,600));
+            backgroundTexture = Content.Load<Texture2D>("battlecity");
+            playerTexture = Content.Load<Texture2D>("zerox4");
+            background = new Environment(this,ref backgroundTexture);
+            background.addMap("map1", ref backgroundTexture);
+            background.setMapData("map1", 760, 0, 780, 1300, "land");
+
+            background.setMapData("map1", 960, 1280, 960, 1400, "land");
+            background.setMapData("map1", 900, 1380, 900, 1480, "land");
+            manTexture = new AnimatedTexture(this, ref playerTexture);
+            //add all the action contained inside the sprite with details
+            manTexture.addAction("stand", 4, 5, 5, 45, 50,false);
+            manTexture.addAction("move", 14, 225, 90, 50, 50,false);
+            manTexture.addAction("slash", 8, 280, 50, 90, 75, true);
+            manTexture.addAction("jump", 11, 75, 0, 50, 80, true);
+            manMove = new SpriteMovement(this, new Vector2(100,550));
             man = new Player(this, ref manTexture, manMove);
             Components.Add(man);
             Components.Add(manTexture);
             Components.Add(manMove);
             Components.Add(background);
+            
             // TODO: use this.Content to load your game content here
         }
 
@@ -93,7 +104,6 @@ namespace secondgame
 
             base.Update(gameTime);
         }
-
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>

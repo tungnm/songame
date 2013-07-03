@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -15,132 +16,159 @@ namespace secondgame
     /// <summary>
     /// This is a game component that implements IUpdateable.
     /// </summary>
+    /// hasrh table if action
+    /// return rectangle
+    /// 
+    public class textureAction
+    {      
+        public int nFrame;
+        public int range;
+        public int Row;
+        public int Col;
+        public bool requireFinish;
+        public int height;
+        public textureAction(int frame, int row, int col, int Range, int frameHeight, Boolean finish)
+        {
+            nFrame = frame;
+            Row = row;
+            Col = col;
+            range = Range;
+            requireFinish = finish;
+            height = frameHeight;
+        }
+    }
+
     public class AnimatedTexture : Microsoft.Xna.Framework.GameComponent
     {
-        int BegRow;
-        int originAcRow;
-        int originAcCol;
-        int BegCol;
-        int AcRow;
-        int AcCol;
-        int myFrameRange;
-        int count;
-        int frameNum;
-        int updateCol;
-        int updateRow;
-        int rowLength;
-        Texture2D texture;
-        Boolean isStop;
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="game">the game</param>
-        /// <param name="theTexture">texture</param>
-        /// <param name="frame">number of frame in each action</param>
-        /// <param name="beginRow">the beginning frame row</param>
-        /// <param name="beginCol">the beginning frame collum</param>
-        /// <param name="beginActionRow">the beginning action row</param>
-        /// <param name="actionRowRange">the range between each action</param>
-        public AnimatedTexture(Game game, Texture2D theTexture, int frame, int beginRow, int beginCol, int beginActionRow,int beginActionCol, int actionRowRange, int frameRange)
+        protected Texture2D texture;
+        protected Hashtable hashtable = new Hashtable();
+        protected textureAction tact;
+        protected Boolean isStop;
+        protected String action;
+        protected textureAction currentAction;
+        protected int count;
+        protected int originCol;
+        protected int currentFrame;
+        protected int currentX;
+        protected int currentY;
+        protected Boolean playAgain;
+        protected String lastAction;
+        protected Boolean isFinish;
+
+        public AnimatedTexture(Game game, ref Texture2D theTexture)
             : base(game)
         {
-            count = 0;
-            frameNum = frame;
             texture = theTexture;
-            isStop = true;
-            BegRow = beginRow;
-            BegCol = beginCol;
-            updateRow = BegRow ;
-            updateCol = BegCol ;
-            AcRow = beginActionRow;
-            originAcRow = beginActionRow;
-            AcCol = beginActionCol;
-            originAcCol = beginActionCol;
-            rowLength = actionRowRange;
-            myFrameRange = frameRange;
+            count = 0;
+            currentFrame = 0;
             // TODO: Construct any child components here
         }
-        public void setAction(int action)
-        {
-            AcRow = action*rowLength;
-            originAcRow = action * rowLength;
-        }
-
-        /// <summary>
-        /// stop the action
-        /// </summary>
-        public void stop()
-        {
-            isStop = true;
-        }
-        /// <summary>
-        /// play the action
-        /// </summary>
-        public void play()
-        {
-            isStop = false;
-        }
-        /// <summary>
-        /// return the vector2 of source Rectangle
-        /// </summary>
-        /// <returns></returns>
-        public Vector2 getRectangle()
-        {
-            return new Vector2(updateCol, updateRow);
-        }
-        /// <summary>
-        /// return the texture 2D
-        /// </summary>
-        /// <returns></returns>
         public Texture2D getTexture()
         {
             return texture;
         }
         /// <summary>
-        /// get the current frame
+        /// input all the actions in the sprite by providing these information
         /// </summary>
-        /// <returns></returns>
-        public void setBeginRow(int row)
+        /// <param name="name">name of the action</param>
+        /// <param name="nFrame">number of frames</param>
+        /// <param name="Row">row position</param>
+        /// <param name="Col">collum position</param>
+        /// <param name="range"> distance between frame</param>
+        public void addAction(String name, int nFrame, int Row, int Col,int range, int height, Boolean finish)
         {
-            BegRow = row;
+            tact = new textureAction(nFrame, Row, Col, range, height, finish);
+            action = name;
+            hashtable.Add(action, tact);//implement the action into harshtable
         }
-        public void setBeginCol(int col)
+        public void setDefaultAction(String defaultAct)
         {
-            BegCol = col;
+            currentAction = (textureAction)hashtable[action];
         }
+        public void play(String theAction)
+        {
+            isStop = false;
+            action = theAction;
+            if (lastAction != theAction)
+            {
+                if (currentAction.requireFinish == true)
+                {
+                    if (isFinish == true)
+                    {
+                        currentAction = (textureAction)hashtable[action];
+                        originCol = currentAction.Col;
+                        currentX = currentAction.Col;
+                        lastAction = theAction;
+                    }
+                }
+                else
+                {
+                    currentAction = (textureAction)hashtable[action];
+                    originCol = currentAction.Col;
+                    currentX = currentAction.Col;
+                    lastAction = theAction;
+                }
+            }
+            isFinish = false;
+            System.Console.Write("\nReset Current Frame!!!");
+            System.Console.Write("origin Colum is"+ originCol.ToString());
+            //isFinish = false;
+        }
+        public void stop()
+        {
+            isStop = true;
+        }
+        public Vector2 getRectangle()
+        {
+            return new Vector2(currentAction.Row, currentX);
+        }
+        public Boolean finish()
+        {
+            return isFinish;
+        }
+        public int getSpriteHeight()
+        {
+            return currentAction.height;
+        }
+        public int getRange()
+        {
+            return currentAction.range;
+        }
+        /// <summary>
+        /// Allows the game component to update itself.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
-            updateCol = BegCol;
-            updateRow = BegRow;
             count++;
-            if (isStop == false)
+            //limiy update to 1 every 20 frame
+            if (count == 5)
             {
-                updateRow = AcRow;
-                updateCol = AcCol;
-                if (count == 10)
+                System.Console.Write("\ncurrentFrame is:"+ currentFrame.ToString());
+                System.Console.Write("\ncurrent Action size is:" + currentAction.nFrame.ToString());
+                if (isStop == false)
                 {
-                    if (AcCol < (frameNum-1)*myFrameRange)
+                    currentFrame++;
+                    if (currentFrame < currentAction.nFrame)
                     {
-                        AcCol+=myFrameRange;
-                        count = 0;
-                        updateCol = AcCol;
+                        currentX += currentAction.range;
                     }
                     else
                     {
-                        AcRow = originAcRow;
-                        AcCol = originAcCol;
-                        updateRow = AcRow;
-                        updateCol = AcCol;
-                        count = 0;
+                        isFinish = true;
+                        currentFrame = 0;
+                       currentX = originCol;
                     }
                 }
-            }
-            else
-            {
-                updateRow = BegRow;
-                updateCol = BegCol;
+                else
+                {
+                    currentX= originCol;
+                }
+                
                 count = 0;
             }
+            // TODO: Add your update code here
+
             base.Update(gameTime);
         }
     }

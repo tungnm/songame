@@ -9,15 +9,15 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
-//test 1
-namespace secondgame
+
+namespace secondgame.AI
 {
     /// <summary>
     /// This is a game component that implements IUpdateable.
     /// </summary>
-    public class Monster : Microsoft.Xna.Framework.DrawableGameComponent
+    public class BasicAI : Microsoft.Xna.Framework.GameComponent
     {
-        public Monster(Game game)
+        public BasicAI(Game game)
             : base(game)
         {
             // TODO: Construct any child components here
@@ -43,12 +43,6 @@ namespace secondgame
             // TODO: Add your update code here
 
             base.Update(gameTime);
-        }
-
-        public override void Draw(GameTime gameTime)
-        {
-           // sBatch.Draw(texture, new Vector2(100, 600), spriteRectangle, Color.White);
-           // base.Draw(gameTime);
         }
     }
 }

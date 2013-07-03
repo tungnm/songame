@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AI\BasicAI.cs" />
     <Compile Include="AnimatedTexture.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Monster.cs" />
